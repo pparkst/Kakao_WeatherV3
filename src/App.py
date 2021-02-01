@@ -1,6 +1,8 @@
 import urllib3
 from urllib.parse import urlencode
 from openpyxl import load_workbook
+from common.Config import Config
+import json
 
 def Load_Korea_latitude():
     #load_wb = load_workbook("/Korea_latitude&longtitude.xlsx")
@@ -49,22 +51,44 @@ def Load_Korea_latitude():
         else:
             print("??")
 
-def getLocalGeo():
+def getLocalGeo(searchWord):
     http = urllib3.PoolManager()
     url = 'https://dapi.kakao.com/v2/local/search/address.json'
-    query = '?' + urlencode({'query': '자양2동'})
+    query = '?' + urlencode({'query': searchWord})
     url+=query
     print(url)
-    r = http.request('GET', url, headers={'Authorization':"KakaoAK "})
+    r = http.request('GET', url, headers={'Authorization':"KakaoAK %s" %Config.KAKAO_KEY })
+    data = json.loads(r.data.decode('UTF-8'))
 
-    print(r.status)
-    print(r.data)
+    #print(r.status)
+    cnt = data['meta']['total_count']
+
+    x = data['documents'][0]['x'] if cnt > 0 else 0 #latitude
+    y = data['documents'][0]['y'] if cnt > 0 else 0 #longitude 
+
+    #print(cnt)
+    #print(y, ",", x)
+    return [y, x]
+    #print(data[0]['meta'][0]['total_count'])
+    #print(r.data.de)
+
+def getWeatherInfo(lat, lon):
+    http = urllib3.PoolManager()
+    url = 'https://api.openweathermap.org/data/2.5/onecall'
+
+    query = '?' + urlencode({'lat': lat, 'lon': lon, 'exclude':'', 'appid': Config.OPENWEATHER_KEY})
+    url+=query
+
+    r = http.request('GET', url)
+    data = json.loads(r.data.decode('UTF-8'))
+
+    print(data)
 
 def App():
     # http = urllib3.PoolManager()
     # url = 'http://apis.data.go.kr/1360000/AsosHourlyInfoService/getWthrDataList'
 
-    # serviceKey = ''
+    # serviceKey = Config.OPENWEATHER_KEY
 
     # print(urlencode({'serviceKey': serviceKey}))
 
@@ -77,8 +101,9 @@ def App():
     # print(r.status)
     # print(r.data)
 
-
-    getLocalGeo()
+    lat, lon = getLocalGeo("자양동")
+    getWeatherInfo(lat, lon)
+    #print(lon, lat)
 
     #Load_Korea_latitude()
 
