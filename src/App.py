@@ -73,6 +73,10 @@ def getLocalGeo(searchWord):
     #print(r.data.de)
 
 def getWeatherInfo(lat, lon):
+    '''doc
+    https://openweathermap.org/api/one-call-api
+    '''
+
     http = urllib3.PoolManager()
     url = 'https://api.openweathermap.org/data/2.5/onecall'
 
