@@ -2,7 +2,10 @@ import urllib3
 from urllib.parse import urlencode
 from openpyxl import load_workbook
 from common.Config import Config
+from util.Common import convertUnixTime
 import json
+import time
+import datetime
 
 def Load_Korea_latitude():
     #load_wb = load_workbook("/Korea_latitude&longtitude.xlsx")
@@ -80,13 +83,55 @@ def getWeatherInfo(lat, lon):
     http = urllib3.PoolManager()
     url = 'https://api.openweathermap.org/data/2.5/onecall'
 
-    query = '?' + urlencode({'lat': lat, 'lon': lon, 'exclude':'', 'appid': Config.OPENWEATHER_KEY})
+    query = '?' + urlencode({'lat': lat, 'lon': lon, 'exclude':'minutely,hourly', 'appid': Config.OPENWEATHER_KEY})
     url+=query
 
     r = http.request('GET', url)
     data = json.loads(r.data.decode('UTF-8'))
+    #print(data)
+    #print(data['current'])
+    current = data['current']
 
-    print(data)
+    unix_time = int(current['dt'])
+    #utc_time = time.gmtime(unix_time)
+    local_time = time.localtime(unix_time)
+
+    print(time.strftime('%Y-%m-%d %H:%M:%S', local_time))
+
+    for daily in data['daily']:
+        print(convertUnixTime(daily['dt']))
+        print("아침:", round(float(daily['temp']['morn']) - 273.15))
+        print("오후:", round(float(daily['temp']['day']) - 273.15))
+        print("저녁:", round(float(daily['temp']['eve']) - 273.15))
+        print("밤:", round(float(daily['temp']['night']) - 273.15))
+
+        print("최저기온:", round(float(daily['temp']['min']) - 273.15))
+        print("최고기온:", round(float(daily['temp']['max']) - 273.15))
+
+        # current.temp
+        # current.feels_like    
+        # current.clouds 흐림
+        # current.uvi UV지수
+        # current.wind_speed 풍속
+        # current.weather.description 날씨 상태 e.g. light snow
+        # current.weather.icon e.g. 01d, http://openweathermap.org/img/wn/01d@2x.png
+
+        # hourly 시간별 예보
+        # hourly.dt 예측 시간 Unix Time
+        # hourly.temp
+        # hourly.feels_like
+        # hourly.clouds
+        # hourly.uvi
+        # hourly.wind_speed
+        # hourly.weather.description
+        # hourly.weather.icon
+
+        # daily.temp.morn 아침 온도
+        # daily.temp.day 낮 온도
+        # daily.temp.eve 저녁 온도
+        # daily.temp.night 밤 온도
+        # daily.temp.min 최소 일일 온도
+        # daily.temp.max 최대 일일 온도
 
 def App():
     # http = urllib3.PoolManager()
