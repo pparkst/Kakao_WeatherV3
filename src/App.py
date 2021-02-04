@@ -108,6 +108,8 @@ def getWeatherInfo(lat, lon):
         print("최저기온:", round(float(daily['temp']['min']) - 273.15))
         print("최고기온:", round(float(daily['temp']['max']) - 273.15))
 
+        print("날씨요약:", daily['weather'][0]['description'])
+
         # current.temp
         # current.feels_like    
         # current.clouds 흐림
@@ -132,6 +134,7 @@ def getWeatherInfo(lat, lon):
         # daily.temp.night 밤 온도
         # daily.temp.min 최소 일일 온도
         # daily.temp.max 최대 일일 온도
+    return data['daily']
 
 def App():
     # http = urllib3.PoolManager()
@@ -150,10 +153,14 @@ def App():
     # print(r.status)
     # print(r.data)
 
-    lat, lon = getLocalGeo("자양동")
-    getWeatherInfo(lat, lon)
     #print(lon, lat)
 
     #Load_Korea_latitude()
 
+    lat, lon = getLocalGeo("자양동")
+    getWeatherInfo(lat, lon)
+    '''test
+    lat, lon = getLocalGeo("자양동")
+    getWeatherInfo(lat, lon)
+    '''
 App()
