@@ -9,7 +9,9 @@ import sys
 from http.cookies import _getdate
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from App import getLocalGeo, getWeatherInfo
-from common.Config import Config
+from common.ApiKey import ApiKey
+from util.Common import AbTemperatureConvertCelsius, convertUnixTime, strWeatherCurrent, strWeather3Day, strToday
+import datetime
 
 app = Flask(__name__)
 
@@ -55,31 +57,42 @@ def Server_Weather_Live():
         print("Admin Service")
         adminData = {
             "data": {
-                "txt":"\n관리자모드 App v" + Config.APP_VERSION,
-                "location":"\n " + Config.BLOG,
-                "info":"\n관리자가 아니라면 멈춰주세요. \n\n email: " + Config.EMAIL
+                "txt":"\n관리자모드 App v" + ApiKey.APP_VERSION,
+                "location":"\n " + ApiKey.BLOG,
+                "info":"\n관리자가 아니라면 멈춰주세요. \n\n email: " + ApiKey.EMAIL
             }
         }
         return jsonify(adminData)
     
     value = req['action']['detailParams']['position']['value']
-    print(value)
+    #print(value)
 
     lat, lon = getLocalGeo(value)
     weatherData = getWeatherInfo(lat, lon)
-    print(weatherData)
+    print(weatherData[0])
+    print('***********************************************************************************')
+    print(weatherData[1])
     
     action = req['action']
-    print(action)
+    #print(action)
+    str3Days = strWeather3Day(weatherData)
+
+    strCurrent = strWeatherCurrent(weatherData, 0 if len(str3Days) < 4 else 1)
+
+    for test in str3Days:
+        print(test)
+
 
     testData = {
             "version": "1.0",
             "data": {
-                "txt":"새해 복 많이 받으세요~\n",
-                "location":"요청하신 ",
-                "info":"는 매우 춥겠습니다."
+                "location": "새해 복 많이 받으세요.\n\n" + "요청하신 지역 : " + value + '\n',
+                "txt": strToday() + " 오늘 -",
+                "info": strCurrent + '\n' + ''.join(str3Days)
             }
         }
+
+    print(testData)
 
     return jsonify(testData)
 

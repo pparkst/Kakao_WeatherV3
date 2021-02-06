@@ -1,8 +1,8 @@
 import urllib3
 from urllib.parse import urlencode
 from openpyxl import load_workbook
-from common.Config import Config
-from util.Common import convertUnixTime
+from common.ApiKey import ApiKey
+from util.Common import convertUnixTime, AbTemperatureConvertCelsius
 import json
 import time
 import datetime
@@ -60,7 +60,7 @@ def getLocalGeo(searchWord):
     query = '?' + urlencode({'query': searchWord})
     url+=query
     print(url)
-    r = http.request('GET', url, headers={'Authorization':"KakaoAK %s" %Config.KAKAO_KEY })
+    r = http.request('GET', url, headers={'Authorization':"KakaoAK %s" %ApiKey.KAKAO_KEY })
     data = json.loads(r.data.decode('UTF-8'))
 
     #print(r.status)
@@ -83,7 +83,7 @@ def getWeatherInfo(lat, lon):
     http = urllib3.PoolManager()
     url = 'https://api.openweathermap.org/data/2.5/onecall'
 
-    query = '?' + urlencode({'lat': lat, 'lon': lon, 'exclude':'minutely,hourly', 'appid': Config.OPENWEATHER_KEY})
+    query = '?' + urlencode({'lat': lat, 'lon': lon, 'exclude':'minutely,hourly', 'lang':'kr', 'appid': ApiKey.OPENWEATHER_KEY})
     url+=query
 
     r = http.request('GET', url)
@@ -134,13 +134,13 @@ def getWeatherInfo(lat, lon):
         # daily.temp.night 밤 온도
         # daily.temp.min 최소 일일 온도
         # daily.temp.max 최대 일일 온도
-    return data['daily']
+    return [data['current'], data['daily']]
 
 def App():
     # http = urllib3.PoolManager()
     # url = 'http://apis.data.go.kr/1360000/AsosHourlyInfoService/getWthrDataList'
 
-    # serviceKey = Config.OPENWEATHER_KEY
+    # serviceKey = ApiKey.OPENWEATHER_KEY
 
     # print(urlencode({'serviceKey': serviceKey}))
 
@@ -157,8 +157,6 @@ def App():
 
     #Load_Korea_latitude()
 
-    lat, lon = getLocalGeo("자양동")
-    getWeatherInfo(lat, lon)
     '''test
     lat, lon = getLocalGeo("자양동")
     getWeatherInfo(lat, lon)
