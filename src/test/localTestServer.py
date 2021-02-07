@@ -48,7 +48,7 @@ def Server_Weather_Test():
 @app.route('/kakaoLive', methods=['GET', 'POST'])
 def Server_Weather_Live():
     req = request.get_json()
-    #print(req)
+    print(req)
     admin = req['action']['detailParams']['position']['origin']
 
     print(admin)

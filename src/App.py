@@ -59,21 +59,15 @@ def getLocalGeo(searchWord):
     url = 'https://dapi.kakao.com/v2/local/search/address.json'
     query = '?' + urlencode({'query': searchWord})
     url+=query
-    print(url)
     r = http.request('GET', url, headers={'Authorization':"KakaoAK %s" %ApiKey.KAKAO_KEY })
     data = json.loads(r.data.decode('UTF-8'))
 
-    #print(r.status)
     cnt = data['meta']['total_count']
 
     x = data['documents'][0]['x'] if cnt > 0 else 0 #latitude
     y = data['documents'][0]['y'] if cnt > 0 else 0 #longitude 
 
-    #print(cnt)
-    #print(y, ",", x)
     return [y, x]
-    #print(data[0]['meta'][0]['total_count'])
-    #print(r.data.de)
 
 def getWeatherInfo(lat, lon):
     '''doc
@@ -88,7 +82,6 @@ def getWeatherInfo(lat, lon):
 
     r = http.request('GET', url)
     data = json.loads(r.data.decode('UTF-8'))
-    #print(data)
     #print(data['current'])
     current = data['current']
 
