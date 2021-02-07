@@ -1,8 +1,12 @@
 import time
 import datetime
 
+def getKtc():
+    return datetime.datetime.utcnow() + datetime.timedelta(hours=9)
+
 def strToday():
-    today = datetime.date.today()
+    today = getKtc()
+
     m = today.strftime('%m')
     d = today.strftime('%d')
 
@@ -10,6 +14,7 @@ def strToday():
         m = m[1:]
     if d[0] == '0':
         d = d[1:]
+    #return today.strftime('%Y-%m-%d')
     return ('%s월 %s일' % (m,d))
 
 def convertUnixTime(unix_time):
@@ -25,6 +30,26 @@ def convertUnixTime(unix_time):
 
 def AbTemperatureConvertCelsius(Absolute):
     return str(round(Absolute - 273.15))
+    
+def getIcon(value):
+    value = int(value)
+    icon = '⛅'
+    if value == 800:
+        icon = '🌤'
+    elif value > 800:
+        icon = '⛅'
+    elif value > 700:
+        icon = '☁'
+    elif value > 599:
+        icon = '🌨'
+    elif value > 499:
+        icon = '🌧'
+    elif value > 299:
+        icon = '🌦'
+    elif value > 199:
+        icon ='⛈'
+    return icon
+
 
 def strWeatherCurrent(weatherData, flag):
     current = {
@@ -74,7 +99,8 @@ def strWeather3Day(weatherData):
         'day' : AbTemperatureConvertCelsius(weatherData[1][0]['temp']['day']) + '°',
         'night':AbTemperatureConvertCelsius(weatherData[1][0]['temp']['night']) + '°',
         'weather': weatherData[1][0]['weather'][0]['description'].replace('온','')  if len(weatherData[1][0]['weather']) > 0 else '',
-        'dress' : strDressCode(AbTemperatureConvertCelsius(weatherData[1][0]['temp']['night']))
+        'dress' : strDressCode(AbTemperatureConvertCelsius(weatherData[1][0]['temp']['night'])),
+        'icon' : getIcon(weatherData[1][0]['weather'][0]['id'])
     }
 
     dt_1 = {
@@ -84,7 +110,8 @@ def strWeather3Day(weatherData):
         'day' : AbTemperatureConvertCelsius(weatherData[1][1]['temp']['day']) + '°',
         'night':AbTemperatureConvertCelsius(weatherData[1][1]['temp']['night']) + '°',
         'weather': weatherData[1][1]['weather'][0]['description'].replace('온','')  if len(weatherData[1][1]['weather']) > 0 else '',
-        'dress' : strDressCode(AbTemperatureConvertCelsius(weatherData[1][0]['temp']['night']))
+        'dress' : strDressCode(AbTemperatureConvertCelsius(weatherData[1][0]['temp']['night'])),
+        'icon' : getIcon(weatherData[1][1]['weather'][0]['id'])
     }
 
     dt_2 = {
@@ -94,7 +121,8 @@ def strWeather3Day(weatherData):
         'day' : AbTemperatureConvertCelsius(weatherData[1][2]['temp']['day']) + '°',
         'night':AbTemperatureConvertCelsius(weatherData[1][2]['temp']['night']) + '°',
         'weather': weatherData[1][2]['weather'][0]['description'].replace('온','')  if len(weatherData[1][2]['weather']) > 0 else '',
-        'dress' : strDressCode(AbTemperatureConvertCelsius(weatherData[1][0]['temp']['night']))
+        'dress' : strDressCode(AbTemperatureConvertCelsius(weatherData[1][0]['temp']['night'])),
+        'icon' : getIcon(weatherData[1][2]['weather'][0]['id'])
     }
 
     dt_3 = {
@@ -104,24 +132,25 @@ def strWeather3Day(weatherData):
         'day' : AbTemperatureConvertCelsius(weatherData[1][3]['temp']['day']) + '°',
         'night':AbTemperatureConvertCelsius(weatherData[1][3]['temp']['night']) + '°',
         'weather': weatherData[1][3]['weather'][0]['description'].replace('온','')  if len(weatherData[1][3]['weather']) > 0 else '',
-        'dress' : strDressCode(AbTemperatureConvertCelsius(weatherData[1][0]['temp']['night']))
+        'dress' : strDressCode(AbTemperatureConvertCelsius(weatherData[1][0]['temp']['night'])),
+        'icon' : getIcon(weatherData[1][3]['weather'][0]['id'])
     }
 
     threeDays = []
-    now_H = int(datetime.datetime.now().strftime('%H'))
+    now_H = int(getKtc().strftime('%H'))
 
     for dt in ([dt_0, dt_1, dt_2, dt_3]):
         strDt = ''
         if dt['key'] == 0:
             if now_H < 17:
                 if now_H < 9:
-                    strDt = '   오전 : ' + dt['morn'] + '\n   ' + '오후 : ' + dt['day'] + '\n   ' + '저녁 : ' + dt['night'] + '\n   ' + '대기상태 : ' + dt['weather'] + '\n   ' + '옷 : ' + dt['dress'] + '\n'
+                    strDt = '   오전 : ' + dt['morn'] + '\n   ' + '오후 : ' + dt['day'] + '\n   ' + '저녁 : ' + dt['night'] + '\n   ' + '대기상태 : ' + dt['weather'] + ' ' + dt['icon'] + '\n   ' + '👕 : ' + dt['dress'] + '\n'
                 elif now_H < 12 :
-                    strDt = '   오후 : ' + dt['day'] + '\n   ' + '저녁 : ' + dt['night'] + '\n   ' + '대기상태 : ' + dt['weather'] + '\n   ' + '옷 : ' + dt['dress'] + '\n'
+                    strDt = '   오후 : ' + dt['day'] + '\n   ' + '저녁 : ' + dt['night'] + '\n   ' + '대기상태 : ' + dt['weather'] + ' ' + dt['icon'] +'\n   ' + '👕 : ' + dt['dress'] + '\n'
                 elif now_H < 17 :
-                    strDt = '   저녁 : ' + dt['night'] + '\n   ' + '대기상태 : ' + dt['weather'] + '\n   ' + '옷차림 : ' + dt['dress'] + '\n'
+                    strDt = '   저녁 : ' + dt['night'] + '\n   ' + '대기상태 : ' + dt['weather'] + ' ' + dt['icon'] +'\n   ' + '👕 : ' + dt['dress'] + '\n'
         else:
-            strDt =  '\n' + dt['date'] + ' - \n   ' + '오전 : ' + dt['morn'] + '\n   ' + '오후 : ' + dt['day'] + '\n   ' + '저녁 : ' + dt['night'] + '\n   ' + '대기상태 : ' + dt['weather'] + '\n   ' + '옷 : ' + dt['dress'] + '\n'
+            strDt =  '\n' + dt['date'] + ' - \n   ' + '오전 : ' + dt['morn'] + '\n   ' + '오후 : ' + dt['day'] + '\n   ' + '저녁 : ' + dt['night'] + '\n   ' + '대기상태 : ' + dt['weather'] + ' ' + dt['icon'] +'\n   ' + '👕 : ' + dt['dress'] + '\n'
         threeDays.append(strDt)
     
     return threeDays
