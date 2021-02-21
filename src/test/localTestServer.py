@@ -50,7 +50,7 @@ def Server_Weather_Live():
     req = request.get_json()
     print(req)
     admin = req['action']['detailParams']['position']['origin']
-
+    
     print(admin)
 
     if '관리자 6652' in admin:
@@ -95,6 +95,18 @@ def Server_Weather_Live():
     print(testData)
 
     return jsonify(testData)
+
+@app.route('/userSet', methods=['POST'])
+def PutUserSet():
+    req = request.get_json()
+    print(req)
+    return jsonify({ 'msg' : 'PutUserSet!'})
+
+@app.route('/userSet', methods=['GET'])
+def GetUserSet():
+    req = request.get_json()
+    print(req)
+    return jsonify({ 'msg' : 'GetUserSet!'})
 
 if __name__=='__main__':
     app.run(host='0.0.0.0', port = 4005)
