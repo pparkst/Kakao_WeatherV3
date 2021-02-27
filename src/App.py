@@ -154,4 +154,4 @@ def App():
     lat, lon = getLocalGeo("자양동")
     getWeatherInfo(lat, lon)
     '''
-App()
+#App()
