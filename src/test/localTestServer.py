@@ -12,6 +12,8 @@ from App import getLocalGeo, getWeatherInfo
 from common.ApiKey import ApiKey
 from util.Common import AbTemperatureConvertCelsius, convertUnixTime, strWeatherCurrent, strWeather3Day, strToday
 import datetime
+from model.UserSet import initEntity
+from db.conn import conn
 
 app = Flask(__name__)
 
@@ -100,7 +102,18 @@ def Server_Weather_Live():
 def PutUserSet():
     req = request.get_json()
     print(req)
-    return jsonify({ 'msg' : 'PutUserSet!'})
+    entity = initEntity(req)
+    print(entity)
+    conn.addData(entity)
+
+    resData = {
+        'msg' : '설정되었습니다.',
+        'location' : entity['location'],
+        'time' : entity['time'],
+        'type' : 'PutUserSet'
+    }
+
+    return jsonify(resData)
 
 @app.route('/userSet', methods=['GET'])
 def GetUserSet():

@@ -210,5 +210,6 @@ $RECYCLE.BIN/
 # pparkst
 ApiKey.py
 Config.py
+dbConfig.py
 
 # End of https://www.toptal.com/developers/gitignore/api/windows,macos,visualstudiocode,python

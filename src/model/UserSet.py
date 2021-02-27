@@ -1,0 +1,20 @@
+import json
+import time
+from App import getLocalGeo
+from util.Common import getKtc
+
+
+def initEntity(request):
+    userSet = request['action']
+    time = json.loads(userSet['params']['time'])['time']
+    time_ = time.split(':')
+    ntime = ':'.join(time_[0:2])
+
+    entity = {  'id': request['userRequest']['user']['id'], 
+                'location': userSet['params']['location'],
+                'time': ntime,
+                'work':1,
+                'created': getKtc()
+               }
+
+    return entity
