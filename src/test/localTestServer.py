@@ -119,6 +119,8 @@ def PutUserSet():
 def GetUserSet():
     req = request.get_json()
     print(req)
+    time = '07:00:00'
+    rows = conn.getData(time)
     return jsonify({ 'msg' : 'GetUserSet!'})
 
 if __name__=='__main__':

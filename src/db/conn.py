@@ -23,6 +23,15 @@ class conn:
         cursor.execute(query, value)
         conn.rds.commit()
 
+    def getData(time):
+        cursor = conn.rds.cursor(pymysql.cursors.DictCursor)
+        query = ('SELECT * FROM ( SELECT ROW_NUMBER() OVER(PARTITION BY id ORDER BY created DESC) AS RN, id, location, time, work, created FROM  %s ) AS TBL WHERE RN = 1 AND work = 1 AND time = %s' % (dbConfig.KAKAOTABLE, time))
+        print(query)
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        print(rows)
+        return rows
+
     def getAll():
         cursor = rds.cursor(pymysql.cursors.DictCursor)
         sql = ('SELECT * FROM %s' % (dbConfig.KAKAOTABLE))
