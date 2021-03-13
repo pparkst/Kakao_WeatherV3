@@ -14,7 +14,14 @@ def initEntity(request):
                 'location': userSet['params']['location'],
                 'time': ntime,
                 'work':1,
-                'created': getKtc()
+                'created': getKtc(),
                }
+
+    return entity
+
+def initUnsetEntity(request):
+    entity = {
+        'id': request['userRequest']['user']['id'], 
+    }
 
     return entity

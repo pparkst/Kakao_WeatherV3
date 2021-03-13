@@ -13,10 +13,18 @@ class conn:
         charset='utf8'
     )
 
+    def disableTalk(entity):
+        cursor = conn.rds.cursor(pymysql.cursors.DictCursor)
+        columns = ','.join(entity.keys())
+        query = "UPDATE %s SET Work = 0 WHERE id = '%s'" % (dbConfig.KAKAOTABLE, entity['id'])
+        print(query)
+        cursor.execute(query)
+        conn.rds.commit()
+
     def addData(entity):
         cursor = conn.rds.cursor(pymysql.cursors.DictCursor)
         columns = ','.join(entity.keys())
-        query = 'INSERT INTO %s (%s) VALUES %s ' % (dbConfig.KAKAOTABLE, columns, '(%s, %s, %s, %s, %s)')
+        query = "INSERT INTO %s (%s) VALUES %s ON DUPLICATE KEY UPDATE location = '%s', time = '%s', work = 1 " % (dbConfig.KAKAOTABLE, columns, '(%s, %s, %s, %s, %s)', entity['location'], entity['time'])
         value = tuple(_ for _ in entity.values())
         print(query)
         print(value)

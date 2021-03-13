@@ -12,7 +12,7 @@ from App import getLocalGeo, getWeatherInfo
 from common.ApiKey import ApiKey
 from util.Common import AbTemperatureConvertCelsius, convertUnixTime, strWeatherCurrent, strWeather3Day, strToday
 import datetime
-from model.UserSet import initEntity
+from model.UserSet import initEntity, initUnsetEntity
 from db.conn import conn
 
 app = Flask(__name__)
@@ -98,22 +98,57 @@ def Server_Weather_Live():
 
     return jsonify(testData)
 
-@app.route('/userSet', methods=['POST'])
+@app.route('/userset', methods=['POST'])
 def PutUserSet():
+    req = request.get_json()
+    print(request.headers)
+    print(req)
+    
+    if(request.headers['P-RequestType'] != ''):
+        if(request.headers['P-RequestType'] == 'set'):
+            entity = initEntity(req)
+            print(entity)
+            conn.addData(entity)
+            resData = {
+                'msg' : '설정되었습니다.',
+                'location' : entity['location'],
+                'time' : entity['time'],
+                'type' : 'PutUserSet'
+            }
+        elif(request.headers['P-RequestType'] == 'unset'):
+            entity = initUnsetEntity(req)
+            print(entity)
+            conn.disableTalk(entity)
+            resData = {
+                'msg' : '설정해제되었습니다.',
+                'location' : '-',
+                'time' : '-',
+                'type' : 'PatchUserUnSet'
+            }
+    else:
+        resData = {
+            'msg' : "don't match",
+            'location' : '-',
+            'time' : '-',
+            'type' : 'none'
+        }
+
+    return jsonify(resData)
+
+@app.route('/userunset', methods=['POST'])
+def PatchUserSet():
     req = request.get_json()
     print(req)
     entity = initEntity(req)
-    print(entity)
-    conn.addData(entity)
+    conn.disableTalk(entity)
 
     resData = {
-        'msg' : '설정되었습니다.',
-        'location' : entity['location'],
-        'time' : entity['time'],
-        'type' : 'PutUserSet'
+        'msg' : '설정해제되었습니다.',
+        'type' : 'PatchUserSet'
     }
 
     return jsonify(resData)
+
 
 @app.route('/userSet', methods=['GET'])
 def GetUserSet():
