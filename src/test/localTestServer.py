@@ -8,9 +8,9 @@ import socket
 import sys
 from http.cookies import _getdate
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
-from App import getLocalGeo, getWeatherInfo
+from App import getLocalGeo, getWeatherInfo, getWeatherInfo5days
 from common.ApiKey import ApiKey
-from util.Common import AbTemperatureConvertCelsius, convertUnixTime, strWeatherCurrent, strWeather3Day, strToday
+from util.Common import AbTemperatureConvertCelsius, convertUnixTime, strWeatherCurrent, strWeather3Day, strToday, strWeather5Days
 import datetime
 from model.UserSet import initEntity, initUnsetEntity
 from db.conn import conn
@@ -164,6 +164,10 @@ def GetMessageList():
     print(req)
     if req['startTime'] != '' and req['endTime'] != '':
         rows = conn.getMessageQue(req['startTime'], req['endTime'])
+        lat, lon = getLocalGeo(rows[0]['location'])
+        weatherData = getWeatherInfo5days(lat,lon)
+        info = strWeather5Days(weatherData)
+        print(info)
         return jsonify(rows)
     return jsonify({'error' : '데이터가 없습니다.'})
 

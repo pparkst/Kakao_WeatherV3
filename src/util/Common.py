@@ -4,6 +4,10 @@ import datetime
 def getKtc():
     return datetime.datetime.utcnow() + datetime.timedelta(hours=9)
 
+def getUnixTimeToKtc(unixTime):
+    unixTime = int(unixTime)
+    return datetime.datetime.utcfromtimestamp(unixTime) + datetime.timedelta(hours=9)
+
 def strToday():
     today = getKtc()
 
@@ -156,4 +160,29 @@ def strWeather3Day(weatherData):
     return threeDays
 
 def strWeather5Days(weatherData):
-    return ''
+    # 6시 9시 12시 15시 18시 21시
+    isMorning = True if getKtc().hour < 12 else False
+    weatherInfo = []
+
+    for row in weatherData:
+        now = getKtc()
+        time = getUnixTimeToKtc(row['dt'])
+        print(isMorning)
+        print(time)
+
+        if isMorning and time.hour == 0:
+            break
+        
+        if not isMorning and time.day > now.day and time.hour > 9:
+            break
+
+        data = {
+            'dt' : time.strftime('%d일 %H시'),
+            'temp' : AbTemperatureConvertCelsius(row['main']['temp']) + '°',
+            'icon' : getIcon(row['weather'][0]['id']),
+            'skyStatus' : row['weather'][0]['id']
+        }
+
+        weatherInfo.append(data)
+
+    return weatherInfo
