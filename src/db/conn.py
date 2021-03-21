@@ -2,6 +2,7 @@ import sys, os
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 import pymysql
 from common.dbConfig import dbConfig
+from model.UserSet import initMessageQue
 
 class conn:
     rds = pymysql.connect(
@@ -41,7 +42,7 @@ class conn:
         return rows
 
     def getAll():
-        cursor = rds.cursor(pymysql.cursors.DictCursor)
+        cursor = conn.rds.cursor(pymysql.cursors.DictCursor)
         sql = ('SELECT * FROM %s' % (dbConfig.KAKAOTABLE))
         cursor.execute(sql)
         result = cursor.fetchall()
@@ -49,6 +50,17 @@ class conn:
         for i in result:
             print(i)
         return result
+
+    def getMessageQue(startTime, endTime):
+        cursor = conn.rds.cursor(pymysql.cursors.DictCursor)
+        sql = ("SELECT id, location FROM %s WHERE work = 1 AND time BETWEEN '%s' AND '%s' " % (dbConfig.KAKAOTABLE, startTime, endTime))
+        cursor.execute(sql)
+        result = cursor.fetchall()
+        data = []
+        for i in result:
+            row = initMessageQue(i)
+            data.append(row)
+        return data
     
 
 

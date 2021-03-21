@@ -154,3 +154,6 @@ def strWeather3Day(weatherData):
         threeDays.append(strDt)
     
     return threeDays
+
+def strWeather5Days(weatherData):
+    return ''

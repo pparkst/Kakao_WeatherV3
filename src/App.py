@@ -129,6 +129,23 @@ def getWeatherInfo(lat, lon):
         # daily.temp.max 최대 일일 온도
     return [data['current'], data['daily']]
 
+def getWeatherInfo5days(lat, lon):
+    '''doc
+    https://openweathermap.org/forecast5
+    '''
+    
+    http = urllib3.PoolManager()
+    url = 'https://api.openweathermap.org/data/2.5/forecast'
+
+    query = '?' + urlencode({'lat': lat, 'lon': lon, 'appid': ApiKey.OPENWEATHER_KEY})
+    url+=query
+
+    r = http.request('GET', url)
+    data = json.loads(r.data.decode('UTF-8'))
+
+    return data['list']
+
+
 def App():
     # http = urllib3.PoolManager()
     # url = 'http://apis.data.go.kr/1360000/AsosHourlyInfoService/getWthrDataList'

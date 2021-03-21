@@ -158,6 +158,15 @@ def GetUserSet():
     rows = conn.getData(time)
     return jsonify({ 'msg' : 'GetUserSet!'})
 
+@app.route('/getmessage', methods=['GET'])
+def GetMessageList():
+    req = request.args.to_dict()
+    print(req)
+    if req['startTime'] != '' and req['endTime'] != '':
+        rows = conn.getMessageQue(req['startTime'], req['endTime'])
+        return jsonify(rows)
+    return jsonify({'error' : '데이터가 없습니다.'})
+
 if __name__=='__main__':
     app.run(host='0.0.0.0', port = 4005)
     print("Run Server")
